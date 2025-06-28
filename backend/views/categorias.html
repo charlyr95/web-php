@@ -14,7 +14,7 @@
             <div class="card-body">
                 <h3 class="card-title mb-3 text-center">Formulario de Alta de Categoría</h3>
                 <p class="card-text text-center mb-4">Complete el siguiente formulario para agregar una nueva categoría al sistema.</p>
-                <form>
+                <form id="formCategoria" action="../categorias.php" method="post">
                     <div class="mb-3">
                     <label for="nombreCategoria" class="form-label">Nombre de la Categoría</label>
                     <input type="text" class="form-control" id="nombreCategoria" name="nombreCategoria" placeholder="Ingrese el nombre" required>
@@ -31,9 +31,7 @@
         </footer>
     </div>
     
-    <!-- jQuery CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <!-- Scripts personalizados -->
-    <script src="../../assets/js/scripts.js"></script>
+    <script src="../../assets/js/validaciones.js"></script>
 </body>
 </html>
