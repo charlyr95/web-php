@@ -34,13 +34,6 @@ Este sistema proporciona una solución completa para la administración de inven
  
 ## 🚀 Instalación y Configuración
 
-### 📋 Requisitos Previos
-
-- **Sistema Operativo**: Windows, macOS o Linux
-- **RAM**: Mínimo 2GB recomendado
-- **Espacio en Disco**: 500MB libres
-- **Navegador Web**: Chrome, Firefox, Safari o Edge (versiones recientes)
-
 ### 🔧 Paso 1: Descarga e Instalación de XAMPP
 
 #### Para Windows:
@@ -69,37 +62,6 @@ Este sistema proporciona una solución completa para la administración de inven
    - Iniciar servicios: **Apache** y **MySQL**
    - Verificar que ambos servicios estén en verde
 
-#### Para macOS:
-
-1. **Descargar XAMPP**:
-   ```bash
-   # Descargar desde el sitio oficial
-   https://www.apachefriends.org/download.html
-   ```
-
-2. **Instalar**:
-   ```bash
-   # Montar el DMG y seguir las instrucciones
-   sudo /Applications/XAMPP/xamppfiles/xampp start
-   ```
-
-#### Para Linux (Ubuntu/Debian):
-
-1. **Descargar e instalar**:
-   ```bash
-   # Descargar XAMPP
-   wget https://www.apachefriends.org/xampp-files/7.4.33/xampp-linux-x64-7.4.33-0-installer.run
-   
-   # Dar permisos de ejecución
-   chmod +x xampp-linux-x64-7.4.33-0-installer.run
-   
-   # Instalar como root
-   sudo ./xampp-linux-x64-7.4.33-0-installer.run
-   
-   # Iniciar servicios
-   sudo /opt/lampp/lampp start
-   ```
-
 ### 🗄️ Paso 2: Configuración de la Base de Datos
 
 1. **Acceder a phpMyAdmin**:
@@ -109,21 +71,19 @@ Este sistema proporciona una solución completa para la administración de inven
 
 2. **Crear la base de datos**:
    ```sql
-   CREATE DATABASE gestion_productos CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   CREATE DATABASE MIPROYECTO
    ```
 
-3. **Crear las tablas**:
+3. **Crear las tablas**: 
+
+    *Nota*: Posicionarse dentro de la base de datos creada
 
    **Tabla de Categorías:**
    ```sql
-   USE gestion_productos;
-   
    CREATE TABLE categorias (
-       id INT AUTO_INCREMENT PRIMARY KEY,
-       nombre VARCHAR(100) NOT NULL UNIQUE,
-       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      nombre VARCHAR(100) NOT NULL UNIQUE
+   );
    ```
 
    **Tabla de Productos:**
@@ -131,33 +91,11 @@ Este sistema proporciona una solución completa para la administración de inven
    CREATE TABLE productos (
        id INT AUTO_INCREMENT PRIMARY KEY,
        nombre VARCHAR(255) NOT NULL,
-       descripcion TEXT,
        precio DECIMAL(10,2) NOT NULL,
        categoria_id INT NOT NULL,
-       imagen_url VARCHAR(500),
-       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-       FOREIGN KEY (categoria_id) REFERENCES categorias(id) ON DELETE RESTRICT
-   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-   ```
-
-4. **Insertar datos de ejemplo**:
-   ```sql
-   -- Categorías de ejemplo
-   INSERT INTO categorias (nombre) VALUES 
-   ('Electrónicos'),
-   ('Ropa y Accesorios'),
-   ('Hogar y Jardín'),
-   ('Deportes'),
-   ('Libros');
-   
-   -- Productos de ejemplo
-   INSERT INTO productos (nombre, descripcion, precio, categoria_id) VALUES 
-   ('Smartphone Samsung Galaxy', 'Teléfono inteligente con pantalla AMOLED', 299.99, 1),
-   ('Laptop Dell Inspiron', 'Laptop para uso profesional y personal', 599.99, 1),
-   ('Camiseta Polo', 'Camiseta de algodón 100% para hombre', 25.99, 2),
-   ('Zapatillas Nike Air', 'Zapatillas deportivas para running', 89.99, 4),
-   ('Mesa de Comedor', 'Mesa de madera para 6 personas', 199.99, 3);
+       descripcion TEXT,
+       imagen VARCHAR(255)
+   );
    ```
 
 ### 📂 Paso 3: Instalación del Proyecto
@@ -165,15 +103,16 @@ Este sistema proporciona una solución completa para la administración de inven
 1. **Descargar el proyecto**:
    ```bash
    # Opción 1: Clonar repositorio (si tienes Git)
-   git clone [URL_DEL_REPOSITORIO] C:\xampp\htdocs\web
+   git clone [https://github.com/charlyr95/web-php] C:\xampp\htdocs
+   cd web-php
    
    # Opción 2: Descargar ZIP y extraer
-   # Extraer en: C:\xampp\htdocs\web
+   # Extraer en: C:\xampp\htdocs
    ```
 
 2. **Verificar estructura de archivos**:
    ```
-   C:\xampp\htdocs\web\
+   C:\xampp\htdocs\web-php\
    ├── index.php
    ├── README.md
    ├── assets/
@@ -189,7 +128,7 @@ Este sistema proporciona una solución completa para la administración de inven
    <?php
    class Database {
        private $host = 'localhost';
-       private $dbname = 'gestion_productos';
+       private $dbname = 'MIPROYECTO';
        private $username = 'root';
        private $password = '';  // En XAMPP por defecto está vacío
        private $charset = 'utf8mb4';
@@ -207,7 +146,7 @@ Este sistema proporciona una solución completa para la administración de inven
 
 2. **Probar la aplicación**:
    ```
-   http://localhost/web
+   http://localhost/web-php
    ```
 
 3. **Verificar funcionalidades**:
@@ -227,7 +166,7 @@ Este sistema proporciona una solución completa para la administración de inven
 
 ### 📝 Gestión de Categorías
 ```
-http://localhost/web/backend/views/categorias.html
+http://localhost/web-php/backend/views/categorias.html
 ```
 - ➕ Crear nuevas categorías
 - ✏️ Editar categorías existentes
@@ -236,7 +175,7 @@ http://localhost/web/backend/views/categorias.html
 
 ### 📦 Gestión de Productos
 ```
-http://localhost/web/backend/views/productos.html
+http://localhost/web-php/backend/views/productos.html
 ```
 - ➕ Crear productos con imágenes
 - ✏️ Editar información de productos
@@ -244,119 +183,6 @@ http://localhost/web/backend/views/productos.html
 - 🔍 Buscar por nombre, categoría, precio
 - 📄 Paginación automática
 
-## 🛠️ Configuración Avanzada
-
-### 🔧 Configuración de PHP
-
-En `C:\xampp\php\php.ini`:
-```ini
-# Aumentar límites para subida de archivos
-upload_max_filesize = 10M
-post_max_size = 10M
-max_execution_time = 300
-
-# Habilitar extensiones necesarias
-extension=pdo_mysql
-extension=gd
-extension=fileinfo
-```
-
-### ⚡ Optimización de MySQL
-
-En phpMyAdmin → Variables:
-```sql
--- Optimizaciones básicas
-SET GLOBAL innodb_buffer_pool_size = 256M;
-SET GLOBAL max_connections = 100;
-```
-
-### 🔒 Seguridad Básica
-
-1. **Cambiar contraseña de MySQL**:
-   ```sql
-   ALTER USER 'root'@'localhost' IDENTIFIED BY 'tu_nueva_contraseña';
-   ```
-
-2. **Configurar .htaccess** (crear en raíz del proyecto):
-   ```apache
-   # Proteger archivos de configuración
-   <Files "*.php">
-       Order Deny,Allow
-       Deny from all
-       Allow from 127.0.0.1
-       Allow from ::1
-   </Files>
-   
-   # Habilitar compresión
-   <IfModule mod_deflate.c>
-       AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript
-   </IfModule>
-   ```
-
-## 🐛 Solución de Problemas
-
-### ❌ Error: "No se puede conectar a la base de datos"
-```bash
-# Verificar que MySQL esté ejecutándose
-netstat -an | find "3306"
-
-# Reiniciar MySQL en XAMPP Control Panel
-# Verificar credenciales en class/database.php
-```
-
-### ❌ Error 404: "Página no encontrada"
-```bash
-# Verificar que Apache esté ejecutándose
-# Comprobar que los archivos estén en C:\xampp\htdocs\web\
-# Verificar permisos de archivos
-```
-
-### ❌ Error: "Call to undefined function"
-```bash
-# Verificar extensiones PHP habilitadas
-# Reiniciar Apache después de cambios en php.ini
-```
-
-### 🔍 Logs para Debugging
-```bash
-# Logs de Apache
-C:\xampp\apache\logs\error.log
-
-# Logs de MySQL
-C:\xampp\mysql\data\mysql_error.log
-
-# Logs de PHP
-C:\xampp\php\logs\php_error_log
-```
-
-## 🚀 Características Avanzadas
-
-### 📊 Reportes y Estadísticas
-- Total de productos por categoría
-- Productos más costosos
-- Estadísticas de uso
-
-### 🔄 API REST
-- Endpoints JSON para integración
-- Documentación de API incluida
-- Soporte para operaciones CRUD
-
-### 📱 PWA (Progressive Web App)
-- Funciona offline
-- Instalable en dispositivos móviles
-- Notificaciones push
-
-## 👥 Contribución
-
-1. Fork el proyecto
-2. Crea tu rama de funcionalidad (`git checkout -b feature/nueva-funcionalidad`)
-3. Commit tus cambios (`git commit -am 'Agrega nueva funcionalidad'`)
-4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Abre un Pull Request
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 
 ## 👨‍💻 Autor
 
