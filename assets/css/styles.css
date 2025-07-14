@@ -1,11 +1,38 @@
-/* CSS Reset */
+/* Modern Minimalist Design System - Bootstrap-First Approach */
+
+/* CSS Reset - Minimal */
 *,
 *::before,
 *::after {
     box-sizing: border-box;
-    margin: 0;
-    padding: 0;
 }
+
 html, body {
     height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+}
+
+/* Global Variables for Consistency */
+:root {
+    --primary-color: #495057;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-bg: #f8f9fa;
+    --border-color: #e9ecef;
+    --text-muted: #6c757d;
+    --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --shadow-md: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+    --border-radius: 0.5rem;
+}
+
+/* Form Validation Styles */
+.is-valid {
+    border-color: var(--success-color) !important;
+}
+
+.is-invalid {
+    border-color: var(--danger-color) !important;
 }

@@ -4,48 +4,146 @@
     <meta charset="UTF-8">
     <title>Alta de Producto</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="../../assets/css/styles.css">
 </head>
 <body>
     <div class="d-flex flex-column align-items-center justify-content-center vh-100">
-        <div class="card shadow" style="min-width: 400px;">
+        <div class="card shadow" style="min-width: 500px; max-width: 600px;">
+            <div class="card-header bg-primary text-center">
+                <h3 class="card-title mb-0 text-white">
+                    <i class="fas fa-box me-2"></i>
+                    Nuevo Producto
+                </h3>
+            </div>
             <div class="card-body">
-                <h3 class="card-title mb-3 text-center">Formulario de Alta de Producto</h3>
-                <p class="card-text text-center mb-4">Complete el siguiente formulario para agregar un nuevo producto al sistema.</p>
-                <form id="formProducto" action="../productos.php" method="post" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label for="nombre" class="form-label">Nombre del producto</label>
-                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+                <p class="card-text text-center mb-4 text-muted">
+                    Complete el siguiente formulario para agregar un nuevo producto al sistema.
+                </p>
+                
+                <!-- Contenedor de alertas -->
+                <div id="alertContainer"></div>
+                
+                <form id="formProducto">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">
+                                    <i class="fas fa-tag me-1"></i>
+                                    Nombre del producto
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="nombre" 
+                                       name="nombre" 
+                                       placeholder="Ingrese el nombre del producto"
+                                       required 
+                                       minlength="2" 
+                                       maxlength="100"
+                                       autocomplete="off">
+                                <div class="invalid-feedback" id="nombreError"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="precio" class="form-label">
+                                    <i class="fas fa-dollar-sign me-1"></i>
+                                    Precio
+                                </label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="precio" 
+                                       name="precio" 
+                                       placeholder="0.00"
+                                       step="0.01" 
+                                       min="0.01"
+                                       required>
+                                <div class="invalid-feedback" id="precioError"></div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="descripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required></textarea>
+                        <label for="descripcion" class="form-label">
+                            <i class="fas fa-align-left me-1"></i>
+                            Descripción
+                        </label>
+                        <textarea class="form-control" 
+                                  id="descripcion" 
+                                  name="descripcion" 
+                                  rows="3" 
+                                  placeholder="Ingrese una descripción del producto"
+                                  maxlength="500"></textarea>
+                        <div class="form-text">Máximo 500 caracteres</div>
+                        <div class="invalid-feedback" id="descripcionError"></div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="precio" class="form-label">Precio</label>
-                        <input type="number" class="form-control" id="precio" name="precio" step="0.01" required>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="categoria" class="form-label">
+                                    <i class="fas fa-folder me-1"></i>
+                                    Categoría
+                                </label>
+                                <select class="form-select" id="categoria" name="categoria_id" required>
+                                    <option value="" disabled selected>
+                                        <i class="fas fa-spinner fa-spin"></i> Cargando categorías...
+                                    </option>
+                                </select>
+                                <div class="invalid-feedback" id="categoriaError"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="imagen" class="form-label">
+                                    <i class="fas fa-image me-1"></i>
+                                    URL de Imagen (opcional)
+                                </label>
+                                <input type="url" 
+                                       class="form-control" 
+                                       id="imagen" 
+                                       name="imagen" 
+                                       placeholder="https://ejemplo.com/imagen.jpg">
+                                <div class="form-text">URL de la imagen del producto</div>
+                                <div class="invalid-feedback" id="imagenError"></div>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="imagen" class="form-label">Imagen</label>
-                        <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*" required>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="categoria" class="form-label">Categoría</label>
-                        <select class="form-select" id="categoria" name="categoria" required>
-                            <option value="" disabled selected>Seleccione una categoría</option>
-                            <option value="1">Hardware</option>
-                            <option value="2">Software</option>
-                            <option value="3">Accesorios</option>
-                        </select>
-                    </div>
-
-                    <div class="d-flex justify-content-end gap-2">
-                        <button type="submit" class="btn btn-primary">Guardar</button>
-                        <button type="reset" class="btn btn-secondary">Cancelar</button>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg" id="btnGuardar">
+                            <span id="btnText">
+                                <i class="fas fa-save me-2"></i>
+                                Guardar Producto
+                            </span>
+                            <span id="btnSpinner" class="d-none">
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                Guardando...
+                            </span>
+                        </button>
+                        
+                        <div class="row g-2">
+                            <div class="col">
+                                <button type="reset" class="btn btn-outline-dark w-100" id="btnLimpiar">
+                                    <i class="fas fa-eraser me-2"></i>
+                                    Limpiar
+                                </button>
+                            </div>
+                            <div class="col">
+                                <a href="lista_productos.html" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-list me-2"></i>
+                                    Ver Lista
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <a href="../../index.php" class="btn btn-outline-dark">
+                            <i class="fas fa-home me-2"></i>
+                            Volver al Inicio
+                        </a>
                     </div>
                 </form>
             </div>
@@ -56,6 +154,427 @@
     </div>
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="../../assets/js/validaciones.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Event listeners
+            $('#formProducto').on('submit', handleSubmit);
+            $('#btnLimpiar').on('click', limpiarFormulario);
+            $('#nombre').on('input', validarNombreEnTiempoReal);
+            $('#precio').on('input', validarPrecioEnTiempoReal);
+            $('#descripcion').on('input', validarDescripcionEnTiempoReal);
+            $('#imagen').on('input', validarImagenEnTiempoReal);
+            
+            // Cargar categorías al inicializar
+            cargarCategorias();
+            
+            // Enfocar el campo nombre al cargar
+            $('#nombre').focus();
+        });
+        
+        /**
+         * Cargar categorías desde el servidor
+         */
+        function cargarCategorias() {
+            $.ajax({
+                url: '../productos.php?categorias=1',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success && response.data) {
+                        const select = $('#categoria');
+                        select.empty();
+                        select.append('<option value="" disabled selected>Seleccione una categoría</option>');
+                        
+                        response.data.forEach(function(categoria) {
+                            select.append(`<option value="${categoria.id}">${categoria.nombre}</option>`);
+                        });
+                    } else {
+                        $('#categoria').html('<option value="" disabled selected>Error al cargar categorías</option>');
+                        mostrarAlerta('Error al cargar categorías', 'warning');
+                    }
+                },
+                error: function() {
+                    $('#categoria').html('<option value="" disabled selected>Error al cargar categorías</option>');
+                    mostrarAlerta('Error de conexión al cargar categorías', 'warning');
+                }
+            });
+        }
+        
+        /**
+         * Manejar envío del formulario
+         */
+        function handleSubmit(e) {
+            e.preventDefault();
+            
+            const nombre = $('#nombre').val().trim();
+            const precio = parseFloat($('#precio').val());
+            const descripcion = $('#descripcion').val().trim();
+            const categoriaId = $('#categoria').val();
+            const imagen = $('#imagen').val().trim();
+            
+            // Validaciones del lado cliente
+            if (!validarFormulario(nombre, precio, descripcion, categoriaId, imagen)) {
+                return;
+            }
+            
+            // Deshabilitar formulario y mostrar loading
+            setLoading(true);
+            
+            // Preparar datos para envío
+            const data = {
+                nombre: nombre,
+                precio: precio,
+                descripcion: descripcion,
+                categoria_id: parseInt(categoriaId),
+                imagen: imagen
+            };
+            
+            // Enviar petición AJAX al controlador
+            $.ajax({
+                url: '../productos.php',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    setLoading(false);
+                    
+                    if (response.success) {
+                        mostrarAlerta(
+                            `${response.message}`, 
+                            'success'
+                        );
+                        
+                        // Limpiar formulario sin ocultar la alerta de éxito
+                        limpiarFormularioSinAlert();
+                        
+                    } else {
+                        mostrarAlerta(
+                            `${response.message}`, 
+                            'danger'
+                        );
+                        $('#nombre').focus();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    setLoading(false);
+                    
+                    let errorMessage = 'Error de conexión al servidor';
+                    
+                    if (xhr.responseJSON) {
+                        errorMessage = xhr.responseJSON.message || errorMessage;
+                    } else if (xhr.status === 0) {
+                        errorMessage = 'No se puede conectar al servidor. Verifique su conexión.';
+                    } else if (xhr.status === 404) {
+                        errorMessage = 'Servicio no encontrado (Error 404)';
+                    } else if (xhr.status === 500) {
+                        errorMessage = 'Error interno del servidor (Error 500)';
+                    }
+                    
+                    mostrarAlerta(
+                        `${errorMessage}`, 
+                        'danger'
+                    );
+                    $('#nombre').focus();
+                }
+            });
+        }
+        
+        /**
+         * Validar todo el formulario
+         */
+        function validarFormulario(nombre, precio, descripcion, categoriaId, imagen) {
+            let valido = true;
+            
+            // Validar nombre
+            if (!validarNombre(nombre)) {
+                valido = false;
+            }
+            
+            // Validar precio
+            if (!validarPrecio(precio)) {
+                valido = false;
+            }
+            
+            // Validar categoría
+            if (!validarCategoria(categoriaId)) {
+                valido = false;
+            }
+            
+            // Validar descripción (opcional pero si hay, debe ser válida)
+            if (descripcion && !validarDescripcion(descripcion)) {
+                valido = false;
+            }
+            
+            // Validar imagen (opcional pero si hay, debe ser válida)
+            if (imagen && !validarImagen(imagen)) {
+                valido = false;
+            }
+            
+            return valido;
+        }
+        
+        /**
+         * Validar nombre del producto
+         */
+        function validarNombre(nombre) {
+            const nombreField = $('#nombre');
+            const errorDiv = $('#nombreError');
+            
+            nombreField.removeClass('is-invalid is-valid');
+            errorDiv.text('');
+            
+            if (!nombre) {
+                mostrarErrorCampo(nombreField, errorDiv, 'El nombre es requerido');
+                return false;
+            }
+            
+            if (nombre.length < 2) {
+                mostrarErrorCampo(nombreField, errorDiv, 'El nombre debe tener al menos 2 caracteres');
+                return false;
+            }
+            
+            if (nombre.length > 100) {
+                mostrarErrorCampo(nombreField, errorDiv, 'El nombre no puede exceder 100 caracteres');
+                return false;
+            }
+            
+            nombreField.addClass('is-valid');
+            return true;
+        }
+        
+        /**
+         * Validar precio del producto
+         */
+        function validarPrecio(precio) {
+            const precioField = $('#precio');
+            const errorDiv = $('#precioError');
+            
+            precioField.removeClass('is-invalid is-valid');
+            errorDiv.text('');
+            
+            if (!precio || isNaN(precio)) {
+                mostrarErrorCampo(precioField, errorDiv, 'El precio es requerido');
+                return false;
+            }
+            
+            if (precio <= 0) {
+                mostrarErrorCampo(precioField, errorDiv, 'El precio debe ser mayor a 0');
+                return false;
+            }
+            
+            if (precio > 999999.99) {
+                mostrarErrorCampo(precioField, errorDiv, 'El precio es demasiado alto');
+                return false;
+            }
+            
+            precioField.addClass('is-valid');
+            return true;
+        }
+        
+        /**
+         * Validar categoría
+         */
+        function validarCategoria(categoriaId) {
+            const categoriaField = $('#categoria');
+            const errorDiv = $('#categoriaError');
+            
+            categoriaField.removeClass('is-invalid is-valid');
+            errorDiv.text('');
+            
+            if (!categoriaId) {
+                mostrarErrorCampo(categoriaField, errorDiv, 'Debe seleccionar una categoría');
+                return false;
+            }
+            
+            categoriaField.addClass('is-valid');
+            return true;
+        }
+        
+        /**
+         * Validar descripción (opcional)
+         */
+        function validarDescripcion(descripcion) {
+            const descripcionField = $('#descripcion');
+            const errorDiv = $('#descripcionError');
+            
+            descripcionField.removeClass('is-invalid is-valid');
+            errorDiv.text('');
+            
+            if (descripcion && descripcion.length > 500) {
+                mostrarErrorCampo(descripcionField, errorDiv, 'La descripción no puede exceder 500 caracteres');
+                return false;
+            }
+            
+            if (descripcion) {
+                descripcionField.addClass('is-valid');
+            }
+            return true;
+        }
+        
+        /**
+         * Validar URL de imagen (opcional)
+         */
+        function validarImagen(imagen) {
+            const imagenField = $('#imagen');
+            const errorDiv = $('#imagenError');
+            
+            imagenField.removeClass('is-invalid is-valid');
+            errorDiv.text('');
+            
+            if (imagen) {
+                const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+                if (!urlPattern.test(imagen)) {
+                    mostrarErrorCampo(imagenField, errorDiv, 'Ingrese una URL válida');
+                    return false;
+                }
+                imagenField.addClass('is-valid');
+            }
+            
+            return true;
+        }
+        
+        /**
+         * Validaciones en tiempo real
+         */
+        function validarNombreEnTiempoReal() {
+            const nombre = $(this).val().trim();
+            if (nombre.length > 0) {
+                validarNombre(nombre);
+            } else {
+                $(this).removeClass('is-invalid is-valid');
+                $('#nombreError').text('');
+            }
+        }
+        
+        function validarPrecioEnTiempoReal() {
+            const precio = parseFloat($(this).val());
+            if ($(this).val()) {
+                validarPrecio(precio);
+            } else {
+                $(this).removeClass('is-invalid is-valid');
+                $('#precioError').text('');
+            }
+        }
+        
+        function validarDescripcionEnTiempoReal() {
+            const descripcion = $(this).val().trim();
+            validarDescripcion(descripcion);
+        }
+        
+        function validarImagenEnTiempoReal() {
+            const imagen = $(this).val().trim();
+            validarImagen(imagen);
+        }
+        
+        /**
+         * Mostrar error en campo específico
+         */
+        function mostrarErrorCampo(field, errorDiv, mensaje) {
+            field.addClass('is-invalid');
+            errorDiv.text(mensaje);
+            field.focus();
+        }
+        
+        /**
+         * Limpiar formulario
+         */
+        function limpiarFormulario() {
+            $('#formProducto')[0].reset();
+            $('.form-control, .form-select').removeClass('is-invalid is-valid');
+            $('.invalid-feedback').text('');
+            $('.alert').fadeOut();
+            cargarCategorias(); // Recargar categorías
+            $('#nombre').focus();
+        }
+        
+        /**
+         * Limpiar formulario sin ocultar alertas (para después de envío exitoso)
+         */
+        function limpiarFormularioSinAlert() {
+            $('#formProducto')[0].reset();
+            $('.form-control, .form-select').removeClass('is-invalid is-valid');
+            $('.invalid-feedback').text('');
+            cargarCategorias(); // Recargar categorías
+            $('#nombre').focus();
+        }
+        
+        /**
+         * Manejar estado de carga
+         */
+        function setLoading(loading) {
+            if (loading) {
+                $('#btnGuardar').prop('disabled', true);
+                $('#btnText').addClass('d-none');
+                $('#btnSpinner').removeClass('d-none');
+                $('.form-control, .form-select').prop('disabled', true);
+                $('#btnLimpiar').prop('disabled', true);
+            } else {
+                $('#btnGuardar').prop('disabled', false);
+                $('#btnText').removeClass('d-none');
+                $('#btnSpinner').addClass('d-none');
+                $('.form-control, .form-select').prop('disabled', false);
+                $('#btnLimpiar').prop('disabled', false);
+            }
+        }
+        
+        /**
+         * Mostrar alertas
+         */
+        function mostrarAlerta(mensaje, tipo) {
+            const iconos = {
+                'success': 'fas fa-check-circle',
+                'danger': 'fas fa-exclamation-triangle',
+                'warning': 'fas fa-exclamation-circle',
+                'info': 'fas fa-info-circle'
+            };
+            
+            const alerta = `
+                <div class="alert alert-${tipo} alert-dismissible fade show" role="alert">
+                    <i class="${iconos[tipo]} me-2"></i>
+                    ${mensaje}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            
+            $('#alertContainer').html(alerta);
+            
+            // Auto-ocultar alertas de éxito después de 8 segundos (más tiempo para leer)
+            if (tipo === 'success') {
+                setTimeout(function() {
+                    $('.alert').fadeOut();
+                }, 8000);
+            }
+            
+            // Scroll al top para mostrar la alerta
+            $('html, body').animate({
+                scrollTop: $('#alertContainer').offset().top - 20
+            }, 300);
+        }
+        
+        /**
+         * Formatear precio mientras se escribe
+         */
+        $('#precio').on('blur', function() {
+            const valor = parseFloat($(this).val());
+            if (!isNaN(valor)) {
+                $(this).val(valor.toFixed(2));
+            }
+        });
+        
+        /**
+         * Shortcuts de teclado
+         */
+        $(document).on('keydown', function(e) {
+            // Ctrl+Enter para enviar
+            if (e.ctrlKey && e.keyCode === 13) {
+                $('#formProducto').submit();
+            }
+            // Escape para limpiar
+            if (e.keyCode === 27) {
+                limpiarFormulario();
+            }
+        });
+    </script>
 </body>
 </html>

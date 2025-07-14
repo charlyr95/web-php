@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Lista de Categorías</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/styles.css">
 </head>
 <body>
@@ -12,14 +13,66 @@
             <div class="col-12">
                 <div class="card shadow">
                     <div class="card-body">
-                        <h3 class="card-title mb-4 text-center">Lista de Categorías</h3>
+                        <h3 class="card-title mb-4 text-center text-success">
+                            <i class="fas fa-boxes me-2"></i>
+                            Lista de Categorías
+                        </h3>
+                        
+                        <!-- Barra de búsqueda y filtros -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="buscarCategoria" placeholder="Buscar categorías...">
+                                    <button class="btn btn-outline-secondary" type="button" id="btnBuscar">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                    <button class="btn btn-outline-secondary" type="button" id="btnLimpiar">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <button class="btn btn-success" id="btnRecargar">
+                                    <i class="fas fa-sync-alt"></i> Recargar
+                                </button>
+                                <a href="categorias.html" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Nueva Categoría
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Navegación -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="../../index.php" class="btn btn-outline-secondary">
+                                        <i class="fas fa-home me-2"></i>Ir al Inicio
+                                    </a>
+                                    <a href="lista_productos.html" class="btn btn-outline-primary">
+                                        <i class="fas fa-box me-2"></i>Gestionar Productos
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Alertas -->
+                        <div id="alertContainer"></div>
+
+                        <!-- Loading indicator -->
+                        <div id="loadingIndicator" class="text-center py-4 d-none">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                            <p class="mt-2">Cargando categorías...</p>
+                        </div>
+
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
                                 <thead class="table-dark">
                                     <tr>
                                         <th>ID</th>
                                         <th>Nombre</th>
-                                        <th>Acciones</th>
+                                        <th width="150">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tablaCategorias">
@@ -27,8 +80,29 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="d-flex justify-content-end">
-                            <a href="categorias.html" class="btn btn-primary">Nueva Categoría</a>
+
+                        <!-- Paginación -->
+                        <nav aria-label="Paginación de categorías" id="paginacionContainer" class="d-none">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <p class="mb-0 text-muted" id="infoResultados"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="pagination justify-content-end mb-0" id="paginacion">
+                                        <!-- La paginación se generará dinámicamente -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </nav>
+
+                        <!-- Mensaje cuando no hay categorías -->
+                        <div id="sinCategorias" class="text-center py-5 d-none">
+                            <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No se encontraron categorías</h5>
+                            <p class="text-muted">Comienza creando tu primera categoría</p>
+                            <a href="categorias.html" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Crear Primera Categoría
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -41,7 +115,331 @@
     
     <!-- jQuery CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Scripts personalizados -->
     <script src="../../assets/js/scripts.js"></script>
+    
+    <script>
+        // Variables globales
+        let currentPage = 1;
+        let currentSearch = '';
+        const itemsPerPage = 10;
+        
+        $(document).ready(function() {
+            // Cargar categorías al iniciar
+            cargarCategorias();
+            
+            // Event listeners
+            $('#btnBuscar').on('click', buscarCategorias);
+            $('#btnLimpiar').on('click', limpiarBusqueda);
+            $('#btnRecargar').on('click', recargarCategorias);
+            
+            // Buscar al presionar Enter
+            $('#buscarCategoria').on('keypress', function(e) {
+                if (e.which === 13) {
+                    buscarCategorias();
+                }
+            });
+        });
+        
+        /**
+         * Cargar categorías desde el servidor
+         */
+        function cargarCategorias(page = 1, search = '') {
+            mostrarCargando(true);
+            currentPage = page;
+            currentSearch = search;
+            
+            let url = '../lista_categorias.php?page=' + page + '&limit=' + itemsPerPage;
+            if (search) {
+                url += '&buscar=' + encodeURIComponent(search);
+            }
+            
+            $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    mostrarCargando(false);
+                    
+                    if (response.success) {
+                        mostrarCategorias(response.data.categorias);
+                        mostrarPaginacion(response.data.pagination);
+                        mostrarInfoResultados(response.data.pagination);
+                    } else {
+                        mostrarAlerta('Error al cargar categorías: ' + response.message, 'danger');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    mostrarCargando(false);
+                    
+                    let errorMessage = 'Error de conexión';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    
+                    mostrarAlerta('Error al cargar categorías: ' + errorMessage, 'danger');
+                }
+            });
+        }
+        
+        /**
+         * Mostrar categorías en la tabla
+         */
+        function mostrarCategorias(categorias) {
+            const tbody = $('#tablaCategorias');
+            tbody.empty();
+            
+            if (categorias.length === 0) {
+                $('#sinCategorias').removeClass('d-none');
+                $('#paginacionContainer').addClass('d-none');
+                return;
+            }
+            
+            $('#sinCategorias').addClass('d-none');
+            
+            categorias.forEach(function(categoria) {
+                const fila = `
+                    <tr>
+                        <td>${categoria.id}</td>
+                        <td>${escapeHtml(categoria.nombre)}</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-primary" 
+                                        onclick="editarCategoria(${categoria.id}, '${escapeHtml(categoria.nombre)}')"
+                                        title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                        onclick="confirmarEliminar(${categoria.id}, '${escapeHtml(categoria.nombre)}')"
+                                        title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.append(fila);
+            });
+        }
+        
+        /**
+         * Mostrar paginación
+         */
+        function mostrarPaginacion(pagination) {
+            const container = $('#paginacion');
+            container.empty();
+            
+            if (pagination.total_pages <= 1) {
+                $('#paginacionContainer').addClass('d-none');
+                return;
+            }
+            
+            $('#paginacionContainer').removeClass('d-none');
+            
+            // Botón anterior
+            const prevDisabled = !pagination.has_prev ? 'disabled' : '';
+            container.append(`
+                <li class="page-item ${prevDisabled}">
+                    <a class="page-link" href="#" onclick="cambiarPagina(${pagination.current_page - 1})">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+            `);
+            
+            // Páginas numeradas
+            const startPage = Math.max(1, pagination.current_page - 2);
+            const endPage = Math.min(pagination.total_pages, pagination.current_page + 2);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const activeClass = i === pagination.current_page ? 'active' : '';
+                container.append(`
+                    <li class="page-item ${activeClass}">
+                        <a class="page-link" href="#" onclick="cambiarPagina(${i})">${i}</a>
+                    </li>
+                `);
+            }
+            
+            // Botón siguiente
+            const nextDisabled = !pagination.has_next ? 'disabled' : '';
+            container.append(`
+                <li class="page-item ${nextDisabled}">
+                    <a class="page-link" href="#" onclick="cambiarPagina(${pagination.current_page + 1})">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            `);
+        }
+        
+        /**
+         * Mostrar información de resultados
+         */
+        function mostrarInfoResultados(pagination) {
+            const inicio = (pagination.current_page - 1) * pagination.items_per_page + 1;
+            const fin = Math.min(pagination.current_page * pagination.items_per_page, pagination.total_items);
+            
+            $('#infoResultados').text(
+                `Mostrando ${inicio} a ${fin} de ${pagination.total_items} categorías`
+            );
+        }
+        
+        /**
+         * Cambiar página
+         */
+        function cambiarPagina(page) {
+            if (page < 1) return;
+            cargarCategorias(page, currentSearch);
+        }
+        
+        /**
+         * Buscar categorías
+         */
+        function buscarCategorias() {
+            const termino = $('#buscarCategoria').val().trim();
+            cargarCategorias(1, termino);
+        }
+        
+        /**
+         * Limpiar búsqueda
+         */
+        function limpiarBusqueda() {
+            $('#buscarCategoria').val('');
+            cargarCategorias(1, '');
+        }
+        
+        /**
+         * Recargar categorías
+         */
+        function recargarCategorias() {
+            cargarCategorias(currentPage, currentSearch);
+        }
+        
+        /**
+         * Editar categoría
+         */
+        function editarCategoria(id, nombre) {
+            // Redirigir a página de edición o abrir modal
+            // Por ahora, simplemente mostrar un alert
+            const nuevoNombre = prompt('Editar nombre de categoría:', nombre);
+            
+            if (nuevoNombre && nuevoNombre.trim() !== nombre) {
+                actualizarCategoria(id, nuevoNombre.trim());
+            }
+        }
+        
+        /**
+         * Actualizar categoría
+         */
+        function actualizarCategoria(id, nombre) {
+            $.ajax({
+                url: '../categorias.php',
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    id: id,
+                    nombre: nombre
+                }),
+                success: function(response) {
+                    if (response.success) {
+                        mostrarAlerta('Categoría actualizada exitosamente', 'success');
+                        cargarCategorias(currentPage, currentSearch);
+                    } else {
+                        mostrarAlerta('Error al actualizar: ' + response.message, 'danger');
+                    }
+                },
+                error: function(xhr) {
+                    let errorMessage = 'Error de conexión';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    mostrarAlerta('Error al actualizar: ' + errorMessage, 'danger');
+                }
+            });
+        }
+        
+        /**
+         * Confirmar eliminación
+         */
+        function confirmarEliminar(id, nombre) {
+            if (confirm(`¿Está seguro de que desea eliminar la categoría "${nombre}"?`)) {
+                eliminarCategoria(id);
+            }
+        }
+        
+        /**
+         * Eliminar categoría
+         */
+        function eliminarCategoria(id) {
+            $.ajax({
+                url: '../lista_categorias.php?id=' + id,
+                type: 'DELETE',
+                success: function(response) {
+                    if (response.success) {
+                        mostrarAlerta('Categoría eliminada exitosamente', 'success');
+                        cargarCategorias(currentPage, currentSearch);
+                    } else {
+                        mostrarAlerta('Error al eliminar: ' + response.message, 'danger');
+                    }
+                },
+                error: function(xhr) {
+                    let errorMessage = 'Error de conexión';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    mostrarAlerta('Error al eliminar: ' + errorMessage, 'danger');
+                }
+            });
+        }
+        
+        /**
+         * Mostrar/ocultar indicador de carga
+         */
+        function mostrarCargando(mostrar) {
+            if (mostrar) {
+                $('#loadingIndicator').removeClass('d-none');
+                $('#tablaCategorias').parent().addClass('d-none');
+                $('#sinCategorias').addClass('d-none');
+            } else {
+                $('#loadingIndicator').addClass('d-none');
+                $('#tablaCategorias').parent().removeClass('d-none');
+            }
+        }
+        
+        /**
+         * Mostrar alerta
+         */
+        function mostrarAlerta(mensaje, tipo) {
+            const alerta = `
+                <div class="alert alert-${tipo} alert-dismissible fade show" role="alert">
+                    ${mensaje}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            $('#alertContainer').html(alerta);
+            
+            // Auto-ocultar solo las alertas de éxito después de 8 segundos
+            if (tipo === 'success') {
+                setTimeout(function() {
+                    $('.alert').fadeOut();
+                }, 8000);
+            }
+        }
+        
+        /**
+         * Escapar HTML para prevenir XSS
+         */
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+    </script>
 </body>
 </html>

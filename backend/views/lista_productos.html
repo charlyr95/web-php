@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Lista de Productos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="../../assets/css/styles.css">
 </head>
 <body>
@@ -12,18 +14,91 @@
             <div class="col-12">
                 <div class="card shadow">
                     <div class="card-body">
-                        <h3 class="card-title mb-4 text-center">Lista de Productos</h3>
+                        <h3 class="card-title mb-4 text-center text-primary">
+                            <i class="fas fa-boxes me-2"></i>
+                            Lista de Productos
+                        </h3>
+                        
+                        <!-- Barra de búsqueda y filtros -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="buscarProducto" placeholder="Buscar productos...">
+                                    <button class="btn btn-outline-secondary" type="button" id="btnBuscar">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="filtroCategoria">
+                                    <option value="">Todas las categorías</option>
+                                    <!-- Las categorías se cargarán dinámicamente -->
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" id="ordenarPor">
+                                    <option value="nombre">Nombre</option>
+                                    <option value="precio">Precio</option>
+                                    <option value="id">ID</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <select class="form-select" id="direccionOrden">
+                                    <option value="asc">↑</option>
+                                    <option value="desc">↓</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="btn-group w-100 border-black" role="group">
+                                    <button class="btn btn-outline-danger" id="btnLimpiar" title="Limpiar filtros">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    <button class="btn btn-outline-success" id="btnRecargar" title="Recargar">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                    <a href="productos.html" class="btn btn-primary" title="Nuevo producto">
+                                        <i class="fas fa-plus"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Navegación -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="../../index.php" class="btn btn-outline-secondary">
+                                        <i class="fas fa-home me-2"></i>Ir al Inicio
+                                    </a>
+                                    <a href="lista_categorias.html" class="btn btn-outline-success">
+                                        <i class="fas fa-tags me-2"></i>Gestionar Categorías
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Alertas -->
+                        <div id="alertContainer"></div>
+
+                        <!-- Loading indicator -->
+                        <div id="loadingIndicator" class="text-center py-4 d-none">
+                            <div class="spinner-border text-success" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                            <p class="mt-2">Cargando productos...</p>
+                        </div>
+
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
                                 <thead class="table-dark">
                                     <tr>
-                                        <th>ID</th>
+                                        <th width="60">ID</th>
                                         <th>Nombre</th>
                                         <th>Descripción</th>
-                                        <th>Precio</th>
-                                        <th>Categoría</th>
-                                        <th>Imagen</th>
-                                        <th>Acciones</th>
+                                        <th width="100">Precio</th>
+                                        <th width="120">Categoría</th>
+                                        <th width="80">Imagen</th>
+                                        <th width="120">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tablaProductos">
@@ -31,8 +106,29 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="d-flex justify-content-end">
-                            <a href="productos.html" class="btn btn-primary">Nuevo Producto</a>
+
+                        <!-- Paginación -->
+                        <nav aria-label="Paginación de productos" id="paginacionContainer" class="d-none">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <p class="mb-0 text-muted" id="infoResultados"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="pagination justify-content-end mb-0" id="paginacion">
+                                        <!-- La paginación se generará dinámicamente -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </nav>
+
+                        <!-- Mensaje cuando no hay productos -->
+                        <div id="sinProductos" class="text-center py-5 d-none">
+                            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No se encontraron productos</h5>
+                            <p class="text-muted">Comience creando su primer producto</p>
+                            <a href="productos.html" class="btn btn-success">
+                                <i class="fas fa-plus"></i> Crear Primer Producto
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -45,7 +141,397 @@
     
     <!-- jQuery CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <!-- Scripts personalizados -->
-    <script src="../../assets/js/scripts.js"></script>
+    
+    <script>
+        // Variables globales
+        let currentPage = 1;
+        let currentSearch = '';
+        let currentCategory = '';
+        let currentOrderBy = 'nombre';
+        let currentOrderDir = 'asc';
+        const itemsPerPage = 10;
+        let categoriasData = [];
+        
+        $(document).ready(function() {
+            // Cargar datos iniciales
+            cargarCategorias();
+            cargarProductos();
+            
+            // Event listeners
+            $('#btnBuscar').on('click', buscarProductos);
+            $('#btnLimpiar').on('click', limpiarFiltros);
+            $('#btnRecargar').on('click', recargarProductos);
+            $('#filtroCategoria').on('change', filtrarPorCategoria);
+            $('#ordenarPor').on('change', cambiarOrden);
+            $('#direccionOrden').on('change', cambiarOrden);
+            
+            // Buscar al presionar Enter
+            $('#buscarProducto').on('keypress', function(e) {
+                if (e.which === 13) {
+                    buscarProductos();
+                }
+            });
+        });
+        
+        /**
+         * Cargar categorías para el filtro
+         */
+        function cargarCategorias() {
+            $.ajax({
+                url: '../productos.php?categorias=1',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success && response.data) {
+                        categoriasData = response.data;
+                        const select = $('#filtroCategoria');
+                        select.find('option:not(:first)').remove();
+                        
+                        response.data.forEach(function(categoria) {
+                            select.append(`<option value="${categoria.id}">${categoria.nombre}</option>`);
+                        });
+                    }
+                },
+                error: function() {
+                    console.log('Error al cargar categorías para filtro');
+                }
+            });
+        }
+        
+        /**
+         * Cargar productos desde el servidor
+         */
+        function cargarProductos(page = 1, search = '', categoryId = '', orderBy = 'nombre', orderDir = 'asc') {
+            mostrarCargando(true);
+            
+            // Actualizar variables globales
+            currentPage = page;
+            currentSearch = search;
+            currentCategory = categoryId;
+            currentOrderBy = orderBy;
+            currentOrderDir = orderDir;
+            
+            // Construir URL con parámetros
+            let url = `../lista_productos.php?page=${page}&limit=${itemsPerPage}&order_by=${orderBy}&order_dir=${orderDir}`;
+            
+            if (search) {
+                url += `&buscar=${encodeURIComponent(search)}`;
+            }
+            
+            if (categoryId) {
+                url += `&categoria_id=${categoryId}`;
+            }
+            
+            $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    mostrarCargando(false);
+                    
+                    if (response.success) {
+                        mostrarProductos(response.data.productos);
+                        mostrarPaginacion(response.data.pagination);
+                        mostrarInfoResultados(response.data.pagination);
+                    } else {
+                        mostrarAlerta('Error al cargar productos: ' + response.message, 'danger');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    mostrarCargando(false);
+                    
+                    let errorMessage = 'Error de conexión';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    
+                    mostrarAlerta('Error al cargar productos: ' + errorMessage, 'danger');
+                }
+            });
+        }
+        
+        /**
+         * Mostrar productos en la tabla
+         */
+        function mostrarProductos(productos) {
+            const tbody = $('#tablaProductos');
+            tbody.empty();
+            
+            if (productos.length === 0) {
+                $('#sinProductos').removeClass('d-none');
+                $('#paginacionContainer').addClass('d-none');
+                return;
+            }
+            
+            $('#sinProductos').addClass('d-none');
+            
+            productos.forEach(function(producto) {
+                // Truncar descripción si es muy larga
+                const descripcionCorta = producto.descripcion && producto.descripcion.length > 50 
+                    ? producto.descripcion.substring(0, 50) + '...' 
+                    : (producto.descripcion || 'Sin descripción');
+                
+                // Imagen
+                const imagenHTML = producto.tiene_imagen 
+                    ? `<img src="${escapeHtml(producto.imagen_url)}" alt="Imagen" class="img-thumbnail" style="width: 40px; height: 40px; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                       <i class="fas fa-image text-muted" style="display: none; font-size: 24px;"></i>` 
+                    : '<i class="fas fa-image text-muted" style="font-size: 24px;"></i>';
+                
+                const fila = `
+                    <tr>
+                        <td>${producto.id}</td>
+                        <td>
+                            <strong>${escapeHtml(producto.nombre)}</strong>
+                        </td>
+                        <td>
+                            <span title="${escapeHtml(producto.descripcion || 'Sin descripción')}">
+                                ${escapeHtml(descripcionCorta)}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">$${producto.precio_formateado}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">${escapeHtml(producto.categoria_nombre)}</span>
+                        </td>
+                        <td class="text-center">
+                            ${imagenHTML}
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-secondary d-none" 
+                                        onclick="verProducto(${producto.id})"
+                                        title="Ver detalles">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-primary d-none" 
+                                        onclick="editarProducto(${producto.id})"
+                                        title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                </div>
+                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                    onclick="confirmarEliminar(${producto.id}, '${escapeHtml(producto.nombre)}')"
+                                    title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.append(fila);
+            });
+        }
+        
+        /**
+         * Mostrar paginación
+         */
+        function mostrarPaginacion(pagination) {
+            const container = $('#paginacion');
+            container.empty();
+            
+            if (pagination.total_pages <= 1) {
+                $('#paginacionContainer').addClass('d-none');
+                return;
+            }
+            
+            $('#paginacionContainer').removeClass('d-none');
+            
+            // Botón anterior
+            const prevDisabled = !pagination.has_prev ? 'disabled' : '';
+            container.append(`
+                <li class="page-item ${prevDisabled}">
+                    <a class="page-link" href="#" onclick="cambiarPagina(${pagination.current_page - 1})">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+            `);
+            
+            // Páginas numeradas
+            const startPage = Math.max(1, pagination.current_page - 2);
+            const endPage = Math.min(pagination.total_pages, pagination.current_page + 2);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const activeClass = i === pagination.current_page ? 'active' : '';
+                container.append(`
+                    <li class="page-item ${activeClass}">
+                        <a class="page-link" href="#" onclick="cambiarPagina(${i})">${i}</a>
+                    </li>
+                `);
+            }
+            
+            // Botón siguiente
+            const nextDisabled = !pagination.has_next ? 'disabled' : '';
+            container.append(`
+                <li class="page-item ${nextDisabled}">
+                    <a class="page-link" href="#" onclick="cambiarPagina(${pagination.current_page + 1})">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            `);
+        }
+        
+        /**
+         * Mostrar información de resultados
+         */
+        function mostrarInfoResultados(pagination) {
+            const inicio = (pagination.current_page - 1) * pagination.items_per_page + 1;
+            const fin = Math.min(pagination.current_page * pagination.items_per_page, pagination.total_items);
+            
+            $('#infoResultados').text(
+                `Mostrando ${inicio} a ${fin} de ${pagination.total_items} productos`
+            );
+        }
+        
+        /**
+         * Cambiar página
+         */
+        function cambiarPagina(page) {
+            if (page < 1) return;
+            cargarProductos(page, currentSearch, currentCategory, currentOrderBy, currentOrderDir);
+        }
+        
+        /**
+         * Buscar productos
+         */
+        function buscarProductos() {
+            const termino = $('#buscarProducto').val().trim();
+            cargarProductos(1, termino, currentCategory, currentOrderBy, currentOrderDir);
+        }
+        
+        /**
+         * Filtrar por categoría
+         */
+        function filtrarPorCategoria() {
+            const categoriaId = $('#filtroCategoria').val();
+            cargarProductos(1, currentSearch, categoriaId, currentOrderBy, currentOrderDir);
+        }
+        
+        /**
+         * Cambiar orden
+         */
+        function cambiarOrden() {
+            const orderBy = $('#ordenarPor').val();
+            const orderDir = $('#direccionOrden').val();
+            cargarProductos(currentPage, currentSearch, currentCategory, orderBy, orderDir);
+        }
+        
+        /**
+         * Limpiar filtros
+         */
+        function limpiarFiltros() {
+            $('#buscarProducto').val('');
+            $('#filtroCategoria').val('');
+            $('#ordenarPor').val('nombre');
+            $('#direccionOrden').val('asc');
+            cargarProductos(1, '', '', 'nombre', 'asc');
+        }
+        
+        /**
+         * Recargar productos
+         */
+        function recargarProductos() {
+            cargarProductos(currentPage, currentSearch, currentCategory, currentOrderBy, currentOrderDir);
+        }
+        
+        /**
+         * Ver detalles del producto
+         */
+        function verProducto(id) {
+            // Implementar modal o página de detalles
+            alert('Función ver producto ID: ' + id + '\n(Por implementar)');
+        }
+        
+        /**
+         * Editar producto
+         */
+        function editarProducto(id) {
+            // Redirigir a página de edición
+            window.location.href = `productos.html?edit=${id}`;
+        }
+        
+        /**
+         * Confirmar eliminación
+         */
+        function confirmarEliminar(id, nombre) {
+            if (confirm(`¿Está seguro de que desea eliminar el producto "${nombre}"?`)) {
+                eliminarProducto(id);
+            }
+        }
+        
+        /**
+         * Eliminar producto
+         */
+        function eliminarProducto(id) {
+            $.ajax({
+                url: `../lista_productos.php?id=${id}`,
+                type: 'DELETE',
+                success: function(response) {
+                    if (response.success) {
+                        mostrarAlerta('Producto eliminado exitosamente', 'success');
+                        cargarProductos(currentPage, currentSearch, currentCategory, currentOrderBy, currentOrderDir);
+                    } else {
+                        mostrarAlerta('Error al eliminar: ' + response.message, 'danger');
+                    }
+                },
+                error: function(xhr) {
+                    let errorMessage = 'Error de conexión';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    mostrarAlerta('Error al eliminar: ' + errorMessage, 'danger');
+                }
+            });
+        }
+        
+        /**
+         * Mostrar/ocultar indicador de carga
+         */
+        function mostrarCargando(mostrar) {
+            if (mostrar) {
+                $('#loadingIndicator').removeClass('d-none');
+                $('#tablaProductos').parent().addClass('d-none');
+                $('#sinProductos').addClass('d-none');
+            } else {
+                $('#loadingIndicator').addClass('d-none');
+                $('#tablaProductos').parent().removeClass('d-none');
+            }
+        }
+        
+        /**
+         * Mostrar alerta
+         */
+        function mostrarAlerta(mensaje, tipo) {
+            const alerta = `
+                <div class="alert alert-${tipo} alert-dismissible fade show" role="alert">
+                    ${mensaje}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            $('#alertContainer').html(alerta);
+            
+            // Auto-ocultar solo las alertas de éxito después de 8 segundos
+            if (tipo === 'success') {
+                setTimeout(function() {
+                    $('.alert').fadeOut();
+                }, 8000);
+            }
+        }
+        
+        /**
+         * Escapar HTML para prevenir XSS
+         */
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.toString().replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+    </script>
 </body>
 </html>
