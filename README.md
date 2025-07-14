@@ -103,16 +103,15 @@ Este sistema proporciona una solución completa para la administración de inven
 1. **Descargar el proyecto**:
    ```bash
    # Opción 1: Clonar repositorio (si tienes Git)
-   git clone [https://github.com/charlyr95/web-php] C:\xampp\htdocs
-   cd web-php
+   git clone https://github.com/charlyr95/web-php C:\xampp\htdocs\web
    
    # Opción 2: Descargar ZIP y extraer
-   # Extraer en: C:\xampp\htdocs
+   # Extraer en: C:\xampp\htdocs\web
    ```
 
 2. **Verificar estructura de archivos**:
    ```
-   C:\xampp\htdocs\web-php\
+   C:\xampp\htdocs\web\
    ├── index.php
    ├── README.md
    ├── assets/
@@ -146,7 +145,7 @@ Este sistema proporciona una solución completa para la administración de inven
 
 2. **Probar la aplicación**:
    ```
-   http://localhost/web-php
+   http://localhost/web
    ```
 
 3. **Verificar funcionalidades**:
@@ -166,7 +165,7 @@ Este sistema proporciona una solución completa para la administración de inven
 
 ### 📝 Gestión de Categorías
 ```
-http://localhost/web-php/backend/views/categorias.html
+http://localhost/web/backend/views/categorias.html
 ```
 - ➕ Crear nuevas categorías
 - ✏️ Editar categorías existentes
@@ -175,7 +174,7 @@ http://localhost/web-php/backend/views/categorias.html
 
 ### 📦 Gestión de Productos
 ```
-http://localhost/web-php/backend/views/productos.html
+http://localhost/web/backend/views/productos.html
 ```
 - ➕ Crear productos con imágenes
 - ✏️ Editar información de productos
